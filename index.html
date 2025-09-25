@@ -24,12 +24,12 @@ body::-webkit-scrollbar{display:none;}
 .bangla-font{font-family:'Tiro Bangla','Poppins',serif;}
 .container{max-width:980px;margin:40px auto;padding:20px;}
 .action-buttons{display:flex;justify-content:center;gap:12px;margin-bottom:20px;}
-.form-button,.submissions-button,.admin-button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:none;background:var(--gradient-secondary);color:white;font-weight:600;font-size:0.85rem;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
-.form-button:hover,.submissions-button:hover,.admin-button:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
-.form-button::before,.submissions-button::before,.admin-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:0.5s;}
-.form-button:hover::before,.submissions-button:hover::before,.admin-button:hover::before{left:100%;}
+.form-button,.submissions-button,.reply-button,.admin-button{display:inline-flex;align-items:center;gap:6px;padding:6px 12px;border-radius:8px;border:none;background:var(--gradient-secondary);color:white;font-weight:600;font-size:0.85rem;cursor:pointer;transition:var(--transition);box-shadow:var(--shadow-sm);position:relative;overflow:hidden;}
+.form-button:hover,.submissions-button:hover,.reply-button:hover,.admin-button:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+.form-button::before,.submissions-button::before,.reply-button::before,.admin-button::before{content:'';position:absolute;top:0;left:-100%;width:100%;height:100%;background:linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent);transition:0.5s;}
+.form-button:hover::before,.submissions-button:hover::before,.reply-button:hover::before,.admin-button:hover::before{left:100%;}
 .modal{display:none;position:fixed;top:0;left:0;width:100%;height:100%;background-color:rgba(0,0,0,0.5);justify-content:center;align-items:center;z-index:1000;backdrop-filter:blur(5px);}
-.modal-content{background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:25px;max-width:600px;width:90%;backdrop-filter:blur(12px);box-shadow:var(--shadow-lg);position:relative;overflow:auto;max-height:80vh;}
+.modal-content{background:var(--card-bg);border:1px solid var(--card-border);border-radius:16px;padding:25px;max-width:600px;width:90%;backdrop-filter:blur(12px);box-shadow:var(--shadow-lg);position:relative;overflow-y:auto;max-height:90vh;scroll-behavior:smooth;}
 .modal-content::before{content:'';position:absolute;top:0;left:0;right:0;height:4px;background:var(--gradient-primary);}
 .modal-close{position:absolute;top:15px;right:15px;background:none;border:none;color:var(--text-muted);font-size:1.5rem;cursor:pointer;transition:var(--transition);}
 .modal-close:hover{color:var(--danger);}
@@ -48,7 +48,7 @@ body::-webkit-scrollbar{display:none;}
 .notification.show{opacity:1;transform:translateY(0);}
 .notification.success{border-left:4px solid var(--secondary);}
 .notification.error{border-left:4px solid var(--danger);}
-.submissions-list{display:flex;flex-direction:column;gap:15px;}
+.submissions-list,.reply-list{display:flex;flex-direction:column;gap:15px;max-height:60vh;overflow-y:auto;scroll-behavior:smooth;}
 .submission-item{background:var(--glass);border:1px solid var(--glass-border);border-radius:10px;padding:15px;box-shadow:var(--shadow-sm);transition:var(--transition);}
 .submission-item:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
 .submission-name{font-weight:600;font-size:1rem;color:var(--primary);}
@@ -56,7 +56,9 @@ body::-webkit-scrollbar{display:none;}
 .submission-message{margin-top:10px;font-size:0.9rem;}
 .submission-reply{margin-top:10px;font-size:0.9rem;border-top:1px solid var(--card-border);padding-top:10px;color:var(--secondary);}
 .submission-time{font-size:0.75rem;color:var(--text-muted);margin-top:5px;text-align:right;}
-@media(max-width:768px){.container{padding:15px;margin:20px;}.modal-content{padding:20px;max-height:90vh;}.action-buttons{flex-direction:column;gap:10px;}.form-button,.submissions-button,.admin-button{width:100%;justify-content:center;}}
+.reply-btn{padding:8px 16px;border-radius:8px;background:var(--gradient-secondary);color:white;border:none;cursor:pointer;margin-top:10px;transition:var(--transition);box-shadow:var(--shadow-sm);}
+.reply-btn:hover{transform:translateY(-2px);box-shadow:var(--shadow-md);}
+@media(max-width:768px){.container{padding:15px;margin:20px;}.modal-content{padding:20px;max-height:90vh;}.action-buttons{flex-direction:column;gap:10px;}.form-button,.submissions-button,.reply-button,.admin-button{width:100%;justify-content:center;}}
 @media(max-width:480px){.modal-intro h2{font-size:1.2rem;}.form-section label,.form-section input,.form-section select,.form-section textarea,.submit-button{font-size:0.85rem;}.submission-item{padding:12px;}.submission-name,.submission-message{font-size:0.85rem;}.submission-batch,.submission-time{font-size:0.75rem;}}
 </style>
 </head>
@@ -64,8 +66,8 @@ body::-webkit-scrollbar{display:none;}
 <div class="container">
   <div class="action-buttons">
     <button class="form-button" id="form-button"><i class="fas fa-edit"></i> <span class="bangla-font">কমেন্ট করুন</span></button>
+    <button class="reply-button" id="reply-button"><i class="fas fa-reply"></i> <span class="bangla-font">রিপ্লাই দেখুন</span></button>
     <button class="submissions-button" id="submissions-button"><i class="fas fa-list-alt"></i> <span class="bangla-font">সাবমিশন দেখুন</span></button>
-    <button class="admin-button" id="admin-button"><i class="fas fa-user-shield"></i> <span class="bangla-font">অ্যাডমিন উত্তর দিন</span></button>
   </div>
 </div>
 <!-- Form Modal -->
@@ -92,6 +94,24 @@ body::-webkit-scrollbar{display:none;}
         <button type="submit" class="submit-button bangla-font">জমা দিন</button>
       </form>
     </div>
+  </div>
+</div>
+<!-- Reply View Modal -->
+<div class="modal" id="replyModal">
+  <div class="modal-content">
+    <button class="modal-close" onclick="hideReply()">×</button>
+    <div class="modal-intro">
+      <h2 class="bangla-font">রিপ্লাই দেখুন</h2>
+      <p class="bangla-font">আপনার নাম দিন এবং আপনার মেসেজের উত্তর দেখুন।</p>
+    </div>
+    <div class="form-section">
+      <form id="replyForm" onsubmit="loadReplies(event)">
+        <label class="bangla-font" for="replyName">নাম</label>
+        <input type="text" id="replyName" placeholder="আপনার নাম" required class="bangla-font">
+        <button type="submit" class="submit-button bangla-font">দেখুন</button>
+      </form>
+    </div>
+    <div id="reply-list" class="reply-list"></div>
   </div>
 </div>
 <!-- Submissions Modal -->
@@ -141,6 +161,8 @@ function showNotification(message, isError=false){
 
 function showForm(){ $('#formModal').style.display='flex'; $('#myForm').reset(); }
 function hideForm(){ $('#formModal').style.display='none'; }
+function showReply(){ $('#replyModal').style.display='flex'; $('#replyForm').reset(); $('#reply-list').innerHTML = ''; }
+function hideReply(){ $('#replyModal').style.display='none'; }
 function showSubmissions(){ 
   $('#submissionsModal').style.display='flex'; 
   loadSubmissions(); 
@@ -148,6 +170,7 @@ function showSubmissions(){
 function hideSubmissions(){ $('#submissionsModal').style.display='none'; }
 function showAdmin(){ $('#adminModal').style.display='flex'; $('#adminForm').reset(); }
 function hideAdmin(){ $('#adminModal').style.display='none'; }
+function openAdminWithId(id){ showAdmin(); $('#submissionId').value = id; }
 
 function submitForm(event){
   event.preventDefault();
@@ -218,16 +241,51 @@ function loadSubmissions() {
           ${item.reply ? `<div class="submission-reply bangla-font">উত্তর: ${item.reply}</div>` : ''}
           <div class="submission-time bangla-font">${item.time}</div>
         `;
+        if (!item.reply) {
+          const btn = document.createElement('button');
+          btn.className = 'reply-btn bangla-font';
+          btn.innerText = 'উত্তর দিন';
+          btn.onclick = () => openAdminWithId(item.time);
+          div.appendChild(btn);
+        }
         list.appendChild(div);
       });
     })
     .catch(() => showNotification("সাবমিশন লোড হয়নি! আবার চেষ্টা করুন।", true));
 }
 
+function loadReplies(event) {
+  event.preventDefault();
+  const name = $('#replyName').value.trim().toLowerCase();
+  if (!name) return;
+  fetch(WEB_APP_URL + '?action=getSubmissions')
+    .then(res => res.json())
+    .then(data => {
+      const list = $('#reply-list');
+      list.innerHTML = '';
+      const filtered = data.filter(item => item.name.toLowerCase() === name && item.reply);
+      if (filtered.length === 0) {
+        list.innerHTML = '<p class="bangla-font" style="text-align:center;color:var(--text-muted);">কোনো উত্তর পাওয়া যায়নি।</p>';
+      } else {
+        filtered.forEach(item => {
+          const div = document.createElement('div');
+          div.className = 'submission-item';
+          div.innerHTML = `
+            <div class="submission-message bangla-font">প্রশ্ন: ${item.message}</div>
+            <div class="submission-reply bangla-font">উত্তর: ${item.reply}</div>
+            <div class="submission-time bangla-font">${item.time}</div>
+          `;
+          list.appendChild(div);
+        });
+      }
+    })
+    .catch(() => showNotification("রিপ্লাই লোড হয়নি! আবার চেষ্টা করুন।", true));
+}
+
 $('#form-button').addEventListener('click',showForm);
+$('#reply-button').addEventListener('click',showReply);
 $('#submissions-button').addEventListener('click',showSubmissions);
-$('#admin-button').addEventListener('click',showAdmin);
-window.addEventListener('click',(e)=>{ if(e.target==$('#formModal')) hideForm(); if(e.target==$('#submissionsModal')) hideSubmissions(); if(e.target==$('#adminModal')) hideAdmin(); });
+window.addEventListener('click',(e)=>{ if(e.target==$('#formModal')) hideForm(); if(e.target==$('#replyModal')) hideReply(); if(e.target==$('#submissionsModal')) hideSubmissions(); if(e.target==$('#adminModal')) hideAdmin(); });
 </script>
 </body>
 </html>
