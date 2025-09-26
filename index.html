@@ -68,7 +68,7 @@ body::-webkit-scrollbar{display:none;}
 <body>
 <div class="container">
   <div class="action-buttons">
-    <button class="comment-button" id="comment-button"><i class="fas fa-comment-dots"></i> <span class="bangla-font">কমেন্ট</span></button>
+    <button class="form-button" id="form-button"><i class="fas fa-edit"></i> <span class="bangla-font">কমেন্ট করুন</span></button>
     <button class="submissions-button" id="submissions-button"><i class="fas fa-list-alt"></i> <span class="bangla-font">সাবমিশন দেখুন</span></button>
   </div>
 </div>
@@ -89,20 +89,6 @@ body::-webkit-scrollbar{display:none;}
         <input type="text" id="userName" placeholder="আপনার পূর্ণ নাম লিখুন" required class="bangla-font">
         <button type="submit" class="submit-button bangla-font">সেভ করুন</button>
       </form>
-    </div>
-  </div>
-</div>
-<!-- Comment Options Modal -->
-<div class="modal" id="commentOptionsModal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="hideCommentOptions()">×</button>
-    <div class="modal-intro">
-      <h2 class="bangla-font">কমেন্ট অপশন</h2>
-      <p class="bangla-font">নিচের অপশন থেকে নির্বাচন করুন।</p>
-    </div>
-    <div class="sub-buttons">
-      <button class="form-button" onclick="showForm()"><i class="fas fa-edit"></i> <span class="bangla-font">কমেন্ট করুন</span></button>
-      <button class="reply-button" onclick="showReply()"><i class="fas fa-reply"></i> <span class="bangla-font">রিপ্লাই দেখুন</span></button>
     </div>
   </div>
 </div>
@@ -132,17 +118,6 @@ body::-webkit-scrollbar{display:none;}
     </div>
   </div>
 </div>
-<!-- Reply View Modal -->
-<div class="modal" id="replyModal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="hideReply()">×</button>
-    <div class="modal-intro">
-      <h2 class="bangla-font">রিপ্লাই দেখুন</h2>
-      <p class="bangla-font">আপনার মেসেজের উত্তর দেখুন।</p>
-    </div>
-    <div id="reply-list" class="reply-list"></div>
-  </div>
-</div>
 <!-- Submissions Modal -->
 <div class="modal" id="submissionsModal">
   <div class="modal-content">
@@ -152,25 +127,6 @@ body::-webkit-scrollbar{display:none;}
       <p class="bangla-font">এখানে সকল সাবমিশন দেখুন।</p>
     </div>
     <div id="submissions-list" class="submissions-list"></div>
-  </div>
-</div>
-<!-- Admin Reply Modal -->
-<div class="modal" id="adminModal">
-  <div class="modal-content">
-    <button class="modal-close" onclick="hideAdmin()">×</button>
-    <div class="modal-intro">
-      <h2 class="bangla-font">অ্যাডমিন উত্তর দিন</h2>
-      <p class="bangla-font">এখানে সাবমিশনের উত্তর দিন।</p>
-    </div>
-    <div class="form-section">
-      <form id="adminForm" onsubmit="submitAdminReply(event)">
-        <label class="bangla-font" for="submissionId">সাবমিশন আইডি (যেটির উত্তর দিবেন)</label>
-        <input type="text" name="submissionId" id="submissionId" placeholder="সাবমিশন আইডি" required class="bangla-font">
-        <label class="bangla-font" for="reply">উত্তর</label>
-        <textarea name="reply" id="reply" placeholder="আপনার উত্তর লিখুন" required class="bangla-font"></textarea>
-        <button type="submit" class="submit-button bangla-font">উত্তর জমা দিন</button>
-      </form>
-    </div>
   </div>
 </div>
 <div class="success-message" id="successMessage">ফর্ম সফলভাবে জমা হয়েছে!</div>
@@ -200,25 +156,21 @@ function saveName(event){
     localStorage.setItem('userName', name);
     storedName = name;
     hideNameModal();
-    showCommentOptions();
+    showForm();
   } else {
     showNotification("নাম লিখুন!", true);
   }
 }
 
-function showCommentOptions(){ $('#commentOptionsModal').style.display='flex'; }
-function hideCommentOptions(){ $('#commentOptionsModal').style.display='none'; }
-
-function handleCommentClick() {
+function handleFormClick() {
   if (!storedName) {
     showNameModal();
   } else {
-    showCommentOptions();
+    showForm();
   }
 }
 
 function showForm(){ 
-  hideCommentOptions();
   $('#formModal').style.display='flex'; 
   $('#myForm').reset(); 
   $('#name').value = storedName;
@@ -226,24 +178,12 @@ function showForm(){
 
 function hideForm(){ $('#formModal').style.display='none'; }
 
-function showReply(){ 
-  hideCommentOptions();
-  $('#replyModal').style.display='flex'; 
-  loadReplies();
-}
-
-function hideReply(){ $('#replyModal').style.display='none'; }
-
 function showSubmissions(){ 
   $('#submissionsModal').style.display='flex'; 
   loadSubmissions(); 
 }
 
 function hideSubmissions(){ $('#submissionsModal').style.display='none'; }
-
-function showAdmin(){ $('#adminModal').style.display='flex'; $('#adminForm').reset(); }
-function hideAdmin(){ $('#adminModal').style.display='none'; }
-function openAdminWithId(id){ showAdmin(); $('#submissionId').value = id; }
 
 function submitForm(event){
   event.preventDefault();
@@ -278,38 +218,6 @@ function submitForm(event){
   });
 }
 
-function submitAdminReply(event){
-  event.preventDefault();
-  const form = $('#adminForm');
-  const submitBtn = form.querySelector('button[type="submit"]');
-  submitBtn.classList.add('loading');
-  submitBtn.disabled = true;
-  const data = {
-    submissionId: form.submissionId.value.trim(),
-    reply: form.reply.value.trim()
-  };
-
-  fetch(WEB_APP_URL + '?action=adminReply',{
-    method:'POST',
-    body:JSON.stringify(data)
-  })
-  .then(res=>res.text())
-  .then(txt=>{
-    submitBtn.classList.remove('loading');
-    submitBtn.disabled = false;
-    if(txt.startsWith("Success")){
-      form.reset(); hideAdmin(); showSuccessMessage();
-    }else{
-      showNotification("উত্তর জমা হয়নি! আবার চেষ্টা করুন।", true);
-    }
-  })
-  .catch(()=>{
-    submitBtn.classList.remove('loading');
-    submitBtn.disabled = false;
-    showNotification("উত্তর জমা হয়নি! আবার চেষ্টা করুন।", true);
-  });
-}
-
 function showSuccessMessage(){
   const successMessage = $('#successMessage');
   successMessage.style.display='block';
@@ -332,55 +240,18 @@ function loadSubmissions() {
           ${item.reply ? `<div class="submission-reply bangla-font">উত্তর: ${item.reply}</div>` : ''}
           <div class="submission-time bangla-font">${item.time}</div>
         `;
-        if (!item.reply) {
-          const btn = document.createElement('button');
-          btn.className = 'reply-btn bangla-font';
-          btn.innerText = 'উত্তর দিন';
-          btn.onclick = () => openAdminWithId(item.time);
-          div.appendChild(btn);
-        }
         list.appendChild(div);
       });
     })
     .catch(() => showNotification("সাবমিশন লোড হয়নি! আবার চেষ্টা করুন।", true));
 }
 
-function loadReplies() {
-  const name = storedName.toLowerCase();
-  if (!name) return showNotification("নাম সেট করুন!", true);
-  fetch(WEB_APP_URL + '?action=getSubmissions')
-    .then(res => res.json())
-    .then(data => {
-      const list = $('#reply-list');
-      list.innerHTML = '';
-      const filtered = data.filter(item => item.name.toLowerCase() === name && item.reply);
-      if (filtered.length === 0) {
-        list.innerHTML = '<p class="bangla-font" style="text-align:center;color:var(--text-muted);">কোনো উত্তর পাওয়া যায়নি।</p>';
-      } else {
-        filtered.forEach(item => {
-          const div = document.createElement('div');
-          div.className = 'submission-item';
-          div.innerHTML = `
-            <div class="submission-message bangla-font">প্রশ্ন: ${item.message}</div>
-            <div class="submission-reply bangla-font">উত্তর: ${item.reply}</div>
-            <div class="submission-time bangla-font">${item.time}</div>
-          `;
-          list.appendChild(div);
-        });
-      }
-    })
-    .catch(() => showNotification("রিপ্লাই লোড হয়নি! আবার চেষ্টা করুন।", true));
-}
-
-$('#comment-button').addEventListener('click', handleCommentClick);
+$('#form-button').addEventListener('click', handleFormClick);
 $('#submissions-button').addEventListener('click',showSubmissions);
 window.addEventListener('click',(e)=>{ 
   if(e.target==$('#nameModal')) hideNameModal(); 
-  if(e.target==$('#commentOptionsModal')) hideCommentOptions(); 
   if(e.target==$('#formModal')) hideForm(); 
-  if(e.target==$('#replyModal')) hideReply(); 
   if(e.target==$('#submissionsModal')) hideSubmissions(); 
-  if(e.target==$('#adminModal')) hideAdmin(); 
 });
 </script>
 </body>
