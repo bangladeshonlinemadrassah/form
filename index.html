@@ -117,14 +117,14 @@ body::-webkit-scrollbar{display:none;}
     <div class="form-section">
       <form id="myForm" onsubmit="submitForm(event)">
         <label class="bangla-font" for="name">নাম</label>
-        <input type="text" name="name" id="name" placeholder="আপনার নাম" required class="bangla-font" readonly>
+        <input type="text" name="name" id="name" placeholder="আপনার নাম" required class="bangla-font" readonly><br>
         <label class="bangla-font" for="batch">ব্যাচ নাম</label>
         <select name="batch" id="batch" required class="bangla-font">
           <option value="" disabled selected class="bangla-font">ব্যাচ নির্বাচন করুন</option>
           <option value="Alim-25" class="bangla-font">আলিম-২৫</option>
           <option value="Dakhil-26" class="bangla-font">দাখিল-২৬</option>
           <option value="Alim-26" class="bangla-font">আলিম-২৬</option>
-        </select>
+        </select><br>
         <label class="bangla-font" for="message">মতামত/পরামর্শ/অভিযোগ</label>
         <textarea name="message" id="message" placeholder="আপনার মতামত লিখুন" required class="bangla-font"></textarea>
         <button type="submit" class="submit-button bangla-font" id="submitBtn">জমা দিন <span class="spinner"></span></button>
