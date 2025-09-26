@@ -176,7 +176,7 @@ body::-webkit-scrollbar{display:none;}
 <div class="success-message" id="successMessage">ফর্ম সফলভাবে জমা হয়েছে!</div>
 <div id="notification" class="notification"></div>
 <script>
-const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbxLIROfRbcQq4KNfgQncUdfOMorikeMGkmWitoJsa01YhdXH600QO6Sf1WzPqmxdl6JeQ/exec";
+const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzEX1EuBWpSMlZ9zbXs1lAVQkOTdeV779SsD6SF6RllQGMYxcHJu30p5BPzW7O-PAbysg/exec";
 
 function $(sel){ return document.querySelector(sel); }
 
@@ -281,6 +281,9 @@ function submitForm(event){
 function submitAdminReply(event){
   event.preventDefault();
   const form = $('#adminForm');
+  const submitBtn = form.querySelector('button[type="submit"]');
+  submitBtn.classList.add('loading');
+  submitBtn.disabled = true;
   const data = {
     submissionId: form.submissionId.value.trim(),
     reply: form.reply.value.trim()
@@ -292,13 +295,19 @@ function submitAdminReply(event){
   })
   .then(res=>res.text())
   .then(txt=>{
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
     if(txt.startsWith("Success")){
       form.reset(); hideAdmin(); showSuccessMessage();
     }else{
       showNotification("উত্তর জমা হয়নি! আবার চেষ্টা করুন।", true);
     }
   })
-  .catch(()=>showNotification("উত্তর জমা হয়নি! আবার চেষ্টা করুন।", true));
+  .catch(()=>{
+    submitBtn.classList.remove('loading');
+    submitBtn.disabled = false;
+    showNotification("উত্তর জমা হয়নি! আবার চেষ্টা করুন।", true);
+  });
 }
 
 function showSuccessMessage(){
